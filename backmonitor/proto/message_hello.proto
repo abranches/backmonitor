@@ -1,0 +1,18 @@
+message MessageHello {
+    optional string sys_id = 1;     // 255 bytes max
+    required SystemInfo system_info = 2;
+
+    message SystemInfo {
+        required Language language = 1;
+        optional string language_version = 2;
+        optional string hostname = 3;
+        optional string uname = 4;
+        optional string exec_path = 5;
+
+        enum Language {
+            PYTHON = 0;
+            JAVA = 1;
+            C = 2;
+        }
+    }
+}

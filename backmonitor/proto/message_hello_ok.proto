@@ -1,0 +1,3 @@
+message MessageHelloOK {
+    required string sys_id = 1;
+}
