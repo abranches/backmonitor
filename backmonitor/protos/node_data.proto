@@ -1,0 +1,7 @@
+message NodeData {
+    required string language = 1;
+    optional string language_version = 2;
+    optional string hostname = 3;
+    optional string uname = 4;
+    optional string exec_path = 5;
+}

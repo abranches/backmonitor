@@ -1,0 +1,7 @@
+import "node_data.proto";
+
+message MessageHello {
+    optional string node_id = 1;     // 255 bytes max
+    required NodeData node_data = 2;
+
+}

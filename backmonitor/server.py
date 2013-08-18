@@ -2,11 +2,10 @@ import logging
 from twisted.internet.endpoints import TCP4ServerEndpoint
 from twisted.internet import reactor
 
+import config
 from protocol import BackmonitorTwistedFactory
 
 log = logging.getLogger(__name__)
-
-LISTEN_PORT = 8990
 
 class BackmonitorServer(object):
     def __init__(self):
@@ -14,7 +13,7 @@ class BackmonitorServer(object):
 
     def start(self):
         log.debug("Starting backmonitor server")
-        endpoint = TCP4ServerEndpoint(reactor, LISTEN_PORT)
+        endpoint = TCP4ServerEndpoint(reactor, config.LISTEN_PORT)
         endpoint.listen(BackmonitorTwistedFactory(self))
         reactor.run()
 

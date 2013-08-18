@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS nodes(
+    id INTEGER PRIMARY KEY,
+    str_id VARCHAR(255) UNIQUE NOT NULL,
+    host_ip VARCHAR(64) NOT NULL,
+    connected BOOLEAN DEFAULT FALSE,
+    last_conn_time DATETIME,
+    node_data BINARY(1024)
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS events(
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    node INTEGER NOT NULL,
+    timestamp DOUBLE NOT NULL,
+    type INTEGER NOT NULL,
+    name VARCHAR(128) NOT NULL,
+    event_protobuf BINARY(1024),
+    FOREIGN KEY(node) REFERENCES nodes(id)
+) ENGINE = InnoDB;

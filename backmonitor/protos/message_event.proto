@@ -1,0 +1,6 @@
+import "event.proto";
+
+message MessageEvent {
+    required string sys_id = 1;
+    repeated Event event = 2;
+}

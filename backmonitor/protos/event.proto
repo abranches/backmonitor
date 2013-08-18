@@ -1,0 +1,11 @@
+message Event {
+    required uint32 type = 1;
+    required string name = 2;
+    required double timestamp = 3;
+    repeated Argument arg = 4;
+}
+
+message Argument {
+    optional string name = 1;
+    required bytes value = 2;
+}

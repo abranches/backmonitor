@@ -12,6 +12,7 @@ FRAME_END = "\xFE"
 FRAME_END_SIZE = len(FRAME_END)
 
 class Frame(object):
+
     def __init__(self, msg_type, payload):
         self.msg_type = msg_type
         self.payload = payload
@@ -20,10 +21,16 @@ class Frame(object):
         return "Frame(%s, len(payload)=%d)" % \
                 (MessageType.key_of(self.msg_type), len(self.payload))
 
-    def marshal(self):
-        return struct.pack(">BI",
+    def calcsize(self):
+        return FRAME_HEADER_SIZE + len(self.payload) + FRAME_END_SIZE
+
+    def encode(self):
+        return struct.pack(FRAME_HEADER_STRUCT,
                            self.msg_type,
                            len(self.payload)) + self.payload + FRAME_END
+
+    def __eq__(self, o):
+        return self.msg_type == o.msg_type and self.payload == o.payload
 
 
 def decode_frame(raw_data):
@@ -33,7 +40,7 @@ def decode_frame(raw_data):
     create a valid frame or it has multiple frames packed into it.
 
     Arguments:
-        raw_data - bytearray with the raw data of the buffer
+        raw_data - byte() with the raw data of the buffer
 
     Returns (bytes consumed, frame instance) or 
             (0, None) if no complete frame is in the buffer
@@ -50,13 +57,10 @@ def decode_frame(raw_data):
 
     frame_end = FRAME_HEADER_SIZE + payload_size + FRAME_END_SIZE
     if len(raw_data) < frame_end:
-        print FRAME_HEADER_SIZE,
-        print payload_size,
-        print FRAME_END_SIZE
-        log.debug("Invalid frame - incomplete frame (%d, %d)" % (len(raw_data), frame_end))
+        log.debug("Invalid frame - incomplete frame (%d, %d)" % \
+                    (len(raw_data), frame_end))
         return 0, None
 
-    #if raw_data[frame_end - FRAME_END_SIZE] != ord(FRAME_END):
     if raw_data[frame_end - FRAME_END_SIZE] != FRAME_END:
         raise FrameException(
                 "Frame doesn't end with the expected FRAME_END marker")
@@ -68,3 +72,6 @@ def decode_frame(raw_data):
         raise FrameException("Frame has invalid message type")
 
     return frame_end, Frame(msg_type, payload)
+
+
+

@@ -1,8 +1,12 @@
+import logging
+
 from .exceptions import MessageException
 from utilslib.enum import IntEnum
-from network_messages.message_hello_pb2 import MessageHello as _MessageHello
-from network_messages.message_hello_ok_pb2 import MessageHelloOK as _MessageHelloOK
-from network_messages.message_event_pb2 import MessageEvent as _MessageEvent
+from proto_classes.message_hello_pb2 import MessageHello
+from proto_classes.message_hello_ok_pb2 import MessageHelloOK
+from proto_classes.message_event_pb2 import MessageEvent
+
+log = logging.getLogger(__name__)
 
 MessageType = IntEnum(HELLO=10,
                       HELLO_OK=11,
@@ -12,24 +16,21 @@ MessageType = IntEnum(HELLO=10,
                       GOODBYE_OK=31,
                       )
 
-MessageHello = _MessageHello
-MessageHello.type = MessageType.HELLO
+_message_handlers = [(MessageType.HELLO,    MessageHello),
+                     (MessageType.HELLO_OK, MessageHelloOK),
+                     (MessageType.EVENT,    MessageEvent)
+                    ]
 
-MessageHelloOK = _MessageHelloOK
-MessageHelloOK.type = MessageType.HELLO_OK
-#def s(self):
-#    return "Message(%s, %s)" % (MessageType.key_of(self.type),
-#                                super(MessageHelloOK, self).__str__())
-#MessageHelloOK.__str__ = s
+def _message__str__(self):
+    return "MessageProtobuf(%s)" % MessageType.key_of(self.type)
 
-MessageEvent = _MessageEvent
-MessageEvent.type = MessageType.EVENT
-
-_message_handlers = [MessageHello, MessageHelloOK, MessageEvent]
+for mtype, mclass in _message_handlers:
+    mclass.type = mtype
+    mclass.__str__ = _message__str__
 
 def decode_message(frame):
-    for mclass in _message_handlers:
-        if mclass.type == frame.msg_type:
+    for mtype, mclass in _message_handlers:
+        if frame.msg_type == mtype:
             msg_class = mclass
             break
     else:
